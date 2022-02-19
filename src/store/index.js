@@ -19,7 +19,7 @@ export default new Vuex.Store({
     },
     getters: {
         getApiUrl: (state) => {
-            return state.apiUrlLocal;
+            return state.apiUrl;
         },
         getJwt: (state) => {
             return state.jwt;
