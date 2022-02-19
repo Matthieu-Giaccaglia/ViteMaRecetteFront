@@ -5,76 +5,107 @@ import axios from "axios";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {
-    apiUrl: "https://vite-ma-recette-api.herokuapp.com/",
-    imgUrl: "https://vitemarecettedb-7ad4.restdb.io/media/",
-    jwt: null,
-    recipes: []
-  },
-  getters: {
-    getApiUrl: (state) => {
-      return state.apiUrl;
+    state: {
+        apiUrl: "https://vite-ma-recette-api.herokuapp.com/",
+        apiUrlLocal: "http://localhost:2000/",
+        pictureUrl: "https://media.tinygoblins.fr/media/",
+        jwt: null,
+        recipes: [],
+        user: {
+            'email' : null,
+            'username' : null,
+            '_id' : null
+        }
     },
-    getJwt: (state) => {
-      return state.jwt;
+    getters: {
+        getApiUrl: (state) => {
+            return state.apiUrlLocal;
+        },
+        getJwt: (state) => {
+            return state.jwt;
+        },
+        getRecipes: (state) => {
+            return state.recipes;
+        },
+        getPictureUrl : (state) => {
+            return state.pictureUrl
+        },
+        getUser : (state) => {
+            return state.user
+        }
     },
-    getRecipes: (state) => {
-      return state.recipes;
+    mutations: {
+        setJwt(state, jwt) {
+            state.jwt = jwt;
+            window.localStorage.setItem("jwt", jwt);
+        },
+        setRecipes(state, recipes) {
+            state.recipes = recipes;
+        },
+        setUser(state, user) {
+            state.user.email = user.email
+            state.user.username = user.username
+            state.user._id = user._id;
+            window.localStorage.setItem("user", JSON.stringify(user))
+        },
+    },
+    actions: {
+        async initJwt(context) {
+            if (window.localStorage.getItem("jwt") && window.localStorage.getItem("user")) {
+                context.commit("setJwt", window.localStorage.getItem("jwt"))
+                context.commit("setUser", JSON.parse(window.localStorage.getItem("user")))
+                await context.dispatch("setRecipesAction")
+            }
+        },
+        async connection(context, data) {
+            try {
+                let response = await axios.post(context.getters.getApiUrl + "login", {
+                    email: data.email,
+                    password: data.password
+                })
+
+                if (response.data.success) {
+                    context.commit("setJwt", response.data.jwt)
+                    await context.dispatch("setRecipesAction")
+                    context.commit("setUser", response.data.user)
+                    return "success"
+                } else {
+                    return "bad_credential"
+                }
+            } catch (err) {
+                console.log(err)
+                return "server_error"
+            }
+        },
+        async createUser(context, data) {
+            try {
+                await axios.post(context.getters.getApiUrl  + "signup", {
+                    email: data.email,
+                    password: data.password,
+                    username: data.username
+                })
+                return "success"
+            } catch (err) {
+                return "server_error"
+            }
+        },
+        async setRecipesAction(context) {
+            try {
+                let response = await axios.get(context.getters.getApiUrl + 'recipes', {
+                    headers : { Authorization: 'Bearer ' + context.state.jwt }
+                })
+                context.commit("setRecipes", response.data);
+            } catch (err) {
+                console.log(err)
+                return false
+            }
+        },
+        disconnect(context) {
+            context.state.jwt = null
+            context.state.user._id = null
+            context.state.user.email = null
+            context.state.user.username = null
+            window.localStorage.clear()
+        }
     }
-  },
-  mutations: {
-    setJwt(state, jwt) {
-      state.jwt = jwt;
-      window.localStorage.setItem("jwt", jwt);
-    },
-    setRecipes(state, recipes) {
-      state.recipes = recipes;
-    }
-  },
-  actions: {
-    initJwt(context) {
-      console.log("initJwt");
-      if (window.localStorage.getItem("jwt")) {
-        context.commit("setJwt", window.localStorage.getItem("jwt"));
-      }
-    },
-    setJwtAction({ commit, state }, data) {
-      axios
-        .post(state.apiUrl + "login", {
-          email: data.email,
-          password: data.password
-        })
-        .then((response) => {
-          console.log("JWT 1 ", response.data.jwt);
-          commit("setJwt", response.data.jwt);
-        })
-        .catch((err) => console.log(err));
-    },
-    setRecipesAction({ commit, state }) {
-      axios
-        .get(state.apiUrl + "recipes")
-        .then((response) => {
-          console.log(response.data);
-          commit("setRecipes", response.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-    testRestDB() {
-      axios
-        .get(
-          "https://vitemarecettedb-7ad4.restdb.io/media/61bb1585d4fd1466000671b8/",
-          {
-            "x-apikey": "355f7d06674e62234859354b2f57d3ce8d8b6"
-          }
-        )
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  }
 });

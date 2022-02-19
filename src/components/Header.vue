@@ -16,10 +16,10 @@
             <b-nav-item-dropdown right>
               <!-- Using 'button-content' slot -->
               <template #button-content>
-                <em>User</em>
+                <em>{{ username }}</em>
               </template>
-              <b-dropdown-item href="#">Profile</b-dropdown-item>
-              <b-dropdown-item href="#">Sign Out</b-dropdown-item>
+              <b-dropdown-item >Profile</b-dropdown-item>
+              <b-dropdown-item-button @click="disconnect" >Déconnexion</b-dropdown-item-button>
             </b-nav-item-dropdown>
           </b-navbar-nav>
         </b-collapse>
@@ -29,7 +29,19 @@
 </template>
 
 <script>
+
 export default {
   name: "Header",
+  data() {
+    return {
+      username: this.$store.state.user.username
+    }
+  },
+  methods : {
+    disconnect () {
+      this.$store.dispatch("disconnect")
+      this.$router.push({name: "login"})
+    }
+  }
 };
 </script>

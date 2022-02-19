@@ -1,79 +1,116 @@
 <template>
-  <div class="aside-container">
-    <b-form @submit="onSubmit" @reset="onReset" v-if="show">
-      <b-form-group
-        id="input-group-1"
-        label="Email address:"
-        label-for="input-1"
-        description="We'll never share your email with anyone else."
-      >
-        <b-form-input
-          id="input-1"
-          v-model="form.email"
-          type="email"
-          placeholder="Enter email"
-          required
-        ></b-form-input>
-      </b-form-group>
 
-      <b-form-group
-        id="input-group-2"
-        label="Your Password:"
-        label-for="input-2"
-      >
-        <b-form-input
-          id="input-2"
-          type="password"
-          v-model="form.password"
-          placeholder="Enter password"
-          required
-        ></b-form-input>
-      </b-form-group>
+  <div class="aside-container d-flex mt-5 flex-column">
+    <div style="max-width: 400px; width: 95%" class="m-auto">
+      <div>
+        <b-alert v-model="showDismissibleAlertSuccess" variant="success" dismissible>
+          Votre compte a été crée avec succès
+        </b-alert>
+      </div>
 
-      <b-button type="submit" variant="primary">Submit</b-button>
-    </b-form>
+      <div>
+        <b-alert v-model="showDismissibleAlertDanger" variant="danger" dismissible>
+          {{ messageAlert }}
+        </b-alert>
+      </div>
+
+      <b-card
+          title="Connexion"
+          tag="article"
+          class="m-auto"
+      >
+        <b-card-body>
+          <b-form @submit="onSubmit">
+            <b-form-group
+                id="input-group-1"
+                label="Email :"
+                label-for="input-1"
+            >
+              <b-form-input
+                  id="input-1"
+                  v-model="form.email"
+                  type="email"
+                  placeholder="Entrez votre email"
+                  required
+              ></b-form-input>
+            </b-form-group>
+
+            <b-form-group
+                id="input-group-2"
+                label="Mot de passe :"
+                label-for="input-2"
+            >
+              <b-form-input
+                  id="input-2"
+                  type="password"
+                  v-model="form.password"
+                  placeholder="Entrez votre mot de passe"
+                  required
+              ></b-form-input>
+            </b-form-group>
+
+            <b-button type="submit" variant="primary">Se connecter</b-button>
+          </b-form>
+
+        </b-card-body>
+      </b-card>
+      <div class="mt-2">
+        <b-link to="/sign-up" >Pas de compte ? Inscrivez-vous !</b-link>
+      </div>
+    </div>
+
   </div>
+
 </template>
 
 <script>
-import axios from "axios";
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
+  name:"Login",
   data() {
     return {
       form: {
         email: "",
         password: "",
       },
-      show: true,
+      showDismissibleAlertSuccess: false,
+      showDismissibleAlertDanger: false,
+      messageAlert: ""
     };
   },
   methods: {
-    onSubmit(event) {
+    async onSubmit(event) {
       event.preventDefault();
+      let connectionSuccess = await this.$store.dispatch('connection', {
+        email: this.form.email,
+        password: this.form.password
+      })
+      console.log(connectionSuccess)
 
-      this.$store.dispatch('setJwtAction', {email: this.email, password: this.password})
-    },
-    onReset(event) {
-      event.preventDefault();
-      // Reset our form values
-      this.form.email = "";
-      this.form.password = "";
-      // Trick to reset/clear native browser form validation state
-      this.show = false;
-      this.$nextTick(() => {
-        this.show = true;
-      });
+      if(connectionSuccess === "success") {
+        this.$router.push({name: "homePage"})
+      } else if (connectionSuccess === "bad_credential") {
+        this.showDismissibleAlertDanger = true
+        this.messageAlert = "L'email et le mot de passe ne correspondent pas."
+      } else {
+        this.showDismissibleAlertDanger = true
+        this.messageAlert = "Erreur interne."
+      }
     },
   },
   computed: {
     ...mapGetters({
       urlApi: "getApiUrl",
     }),
-    ...mapActions({
-      setJwt: "setJwtAction",
-    }),
   },
+  created() {
+    if (this.$route.query.newUser){
+      this.showDismissibleAlertSuccess = true
+      let query = Object.assign({}, this.$route.query);
+      delete query.newUser;
+      this.$router.replace({ query });
+    }
+  }
 };
 </script>

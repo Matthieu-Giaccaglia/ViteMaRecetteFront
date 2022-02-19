@@ -8,7 +8,7 @@
 import Login from "../components/Login";
 
 export default {
-  name: "Home",
+  name: "LoginRoute",
   components: {
     Login,
   },

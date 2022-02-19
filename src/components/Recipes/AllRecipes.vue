@@ -5,6 +5,7 @@
       :key="recipe._id"
       :name="recipe.name"
       :description="recipe.description"
+      :picture="recipe.picture"
     >
     </CardRecipe>
   </div>
@@ -12,7 +13,7 @@
 
 <script>
 import CardRecipe from "@/components/Recipes/CardRecipe";
-import { mapGetters } from "vuex";
+import {mapGetters} from "vuex";
 
 export default {
   name: "AllRecipes",

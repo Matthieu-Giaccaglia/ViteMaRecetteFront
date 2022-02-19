@@ -2,7 +2,7 @@
   <div>
     <b-card
       :title="name"
-      img-src="https://picsum.photos/600/300/?image=25"
+      :img-src="picture"
       img-alt="Image"
       img-top
       tag="article"
@@ -21,10 +21,18 @@
 </template>
 
 <script>
-console.log("salut");
+import {mapGetters} from "vuex";
 
 export default {
   name: "CardRecipe",
-  props: ["name", "description"],
+  props: ["name", "description", "picture"],
+  created() {
+    this.picture = this.pictureUrl + this.picture
+  },
+  computed: {
+    ...mapGetters({
+      pictureUrl: "getPictureUrl",
+    }),
+  }
 };
 </script>
