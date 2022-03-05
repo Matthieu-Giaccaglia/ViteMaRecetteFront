@@ -5,6 +5,7 @@ import HomeRoute from "@/pages/HomeRoute";
 import SecondPageRoute from "@/pages/SecondPageRoute";
 import LoginRoute from "@/pages/LoginRoute";
 import SignupRoute from "@/pages/SignupRoute";
+import RecipeRoute from "@/pages/RecipeRoute";
 
 Vue.use(Router);
 
@@ -31,6 +32,11 @@ const router = new Router({
       name: "signup",
       component: SignupRoute
     },
+    {
+      path: "/recipe/:id",
+      name: "recipe",
+      component: RecipeRoute
+    }
   ]
 });
 

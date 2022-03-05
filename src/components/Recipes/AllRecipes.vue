@@ -6,6 +6,7 @@
       :name="recipe.name"
       :description="recipe.description"
       :picture="recipe.picture"
+      :id="recipe._id"
     >
     </CardRecipe>
   </div>

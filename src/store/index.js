@@ -32,7 +32,15 @@ export default new Vuex.Store({
         },
         getUser : (state) => {
             return state.user
-        }
+        },
+        getRecipe: (state) => (id) => {
+            for (let i = 0; i< state.recipes.length; i++) {
+                if ( state.recipes[i]._id === id) {
+                    return state.recipes[i];
+                }
+            }
+            return false;
+        },
     },
     mutations: {
         setJwt(state, jwt) {
@@ -46,6 +54,7 @@ export default new Vuex.Store({
             state.user.email = user.email
             state.user.username = user.username
             state.user._id = user._id;
+            console.log(user)
             window.localStorage.setItem("user", JSON.stringify(user))
         },
     },
@@ -65,6 +74,7 @@ export default new Vuex.Store({
                 })
 
                 if (response.data.success) {
+                    console.log(response.data.user)
                     context.commit("setJwt", response.data.jwt)
                     await context.dispatch("setRecipesAction")
                     context.commit("setUser", response.data.user)
@@ -95,6 +105,29 @@ export default new Vuex.Store({
                     headers : { Authorization: 'Bearer ' + context.state.jwt }
                 })
                 context.commit("setRecipes", response.data);
+            } catch (err) {
+                console.log(err)
+                return false
+            }
+        },
+        async getRecipeFromDB(context, id){
+            for (let i = 0; i< context.state.recipes.length; i++) {
+                if ( context.state.recipes[i]._id === id) {
+                    return context.state.recipes[i];
+                }
+            }
+
+            try {
+                let response = await axios.get(context.getters.getApiUrl + 'recipe/'+id, {
+                    headers : { Authorization: 'Bearer ' + context.state.jwt }
+                })
+
+                if(response.data.success) {
+                    return response.data.recipe
+                } else {
+                    return false
+                }
+
             } catch (err) {
                 console.log(err)
                 return false

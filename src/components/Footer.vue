@@ -1,5 +1,9 @@
 <template>
-  <footer>ViteMaRecette©</footer>
+  <footer>
+    <div>
+      Copyright ViteMaRecette : Tous Droits Réservés
+    </div>
+  </footer>
 </template>
 
 <script>
@@ -10,6 +14,12 @@ export default {
 <style>
 footer {
   background-color: #17a2b8;
-  text-align: center;
+  height: 50px;
+  display: flex!important;
+}
+
+footer div {
+  width: max-content;
+  margin: auto auto auto;
 }
 </style>
