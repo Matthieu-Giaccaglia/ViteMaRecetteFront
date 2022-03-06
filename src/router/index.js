@@ -6,6 +6,7 @@ import SecondPageRoute from "@/pages/SecondPageRoute";
 import LoginRoute from "@/pages/LoginRoute";
 import SignupRoute from "@/pages/SignupRoute";
 import RecipeRoute from "@/pages/RecipeRoute";
+import BadUrlRoute from "@/pages/BadUrlRoute";
 
 Vue.use(Router);
 
@@ -36,6 +37,11 @@ const router = new Router({
       path: "/recipe/:id",
       name: "recipe",
       component: RecipeRoute
+    },
+    {
+      path: '/*',
+      name: '404',
+      component: BadUrlRoute
     }
   ]
 });
