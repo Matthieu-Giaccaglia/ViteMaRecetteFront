@@ -7,6 +7,8 @@ import LoginRoute from "@/pages/LoginRoute";
 import SignupRoute from "@/pages/SignupRoute";
 import RecipeRoute from "@/pages/RecipeRoute";
 import BadUrlRoute from "@/pages/BadUrlRoute";
+import CreateRecipeRoute from "@/pages/CreateRecipeRoute";
+
 
 Vue.use(Router);
 
@@ -39,10 +41,16 @@ const router = new Router({
       component: RecipeRoute
     },
     {
+      path: "/createRecipe",
+      name: "createRecipe",
+      component: CreateRecipeRoute
+    },
+    {
       path: '/*',
       name: '404',
       component: BadUrlRoute
-    }
+    },
+
   ]
 });
 

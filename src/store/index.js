@@ -6,15 +6,16 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
-        apiUrl: "https://vite-ma-recette-api.herokuapp.com/",
+        apiUrl: "http://localhost:2000/",
+        apiUrlDistance: "https://vite-ma-recette-api.herokuapp.com/",
         apiUrlLocal: "http://localhost:2000/",
         pictureUrl: "https://media.tinygoblins.fr/media/",
         jwt: null,
         recipes: [],
         user: {
-            'email' : null,
-            'username' : null,
-            '_id' : null
+            'email': null,
+            'username': null,
+            '_id': null
         }
     },
     getters: {
@@ -27,15 +28,15 @@ export default new Vuex.Store({
         getRecipes: (state) => {
             return state.recipes;
         },
-        getPictureUrl : (state) => {
+        getPictureUrl: (state) => {
             return state.pictureUrl
         },
-        getUser : (state) => {
+        getUser: (state) => {
             return state.user
         },
         getRecipe: (state) => (id) => {
-            for (let i = 0; i< state.recipes.length; i++) {
-                if ( state.recipes[i]._id === id) {
+            for (let i = 0; i < state.recipes.length; i++) {
+                if (state.recipes[i]._id === id) {
                     return state.recipes[i];
                 }
             }
@@ -89,7 +90,7 @@ export default new Vuex.Store({
         },
         async createUser(context, data) {
             try {
-                await axios.post(context.getters.getApiUrl  + "signup", {
+                await axios.post(context.getters.getApiUrl + "signup", {
                     email: data.email,
                     password: data.password,
                     username: data.username
@@ -102,7 +103,7 @@ export default new Vuex.Store({
         async setRecipesAction(context) {
             try {
                 let response = await axios.get(context.getters.getApiUrl + 'recipes', {
-                    headers : { Authorization: 'Bearer ' + context.state.jwt }
+                    headers: {Authorization: 'Bearer ' + context.state.jwt}
                 })
                 context.commit("setRecipes", response.data);
             } catch (err) {
@@ -110,19 +111,19 @@ export default new Vuex.Store({
                 return false
             }
         },
-        async getRecipeFromDB(context, id){
-            for (let i = 0; i< context.state.recipes.length; i++) {
-                if ( context.state.recipes[i]._id === id) {
+        async getRecipeFromDB(context, id) {
+            for (let i = 0; i < context.state.recipes.length; i++) {
+                if (context.state.recipes[i]._id === id) {
                     return context.state.recipes[i];
                 }
             }
 
             try {
-                let response = await axios.get(context.getters.getApiUrl + 'recipe/'+id, {
-                    headers : { Authorization: 'Bearer ' + context.state.jwt }
+                let response = await axios.get(context.getters.getApiUrl + 'recipe/' + id, {
+                    headers: {Authorization: 'Bearer ' + context.state.jwt}
                 })
 
-                if(response.data.success) {
+                if (response.data.success) {
                     return response.data.recipe
                 } else {
                     return false
@@ -131,6 +132,39 @@ export default new Vuex.Store({
             } catch (err) {
                 console.log(err)
                 return false
+            }
+        },
+        async createRecipe(context, data) {
+            try {
+                let formdata = new FormData()
+                formdata.append('myfile', data.picture, data.picture.name);
+                let response = await axios.post(context.getters.getApiUrl + "recipe", {
+                    name: data.name,
+                    picture: formdata,
+                    description: "grrf",
+                    ingredients: [{
+                        name: "rd",
+                        quantity: 1,
+                        'unit': 'ok'
+                    }],
+                    steps: [{
+                        step: 1,
+                        action: "iojh"
+                    }],
+                    nbOfPerson: 1
+
+
+                }, {
+                    headers: {
+                        'Content-Type':'multipart/form-data',
+                        Authorization: 'Bearer ' + context.state.jwt
+                    }
+                })
+
+                if (response)
+                    console.log(response.data)
+            } catch (err) {
+                console.log(err)
             }
         },
         disconnect(context) {

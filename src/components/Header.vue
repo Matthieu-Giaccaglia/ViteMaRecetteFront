@@ -8,7 +8,7 @@
 
         <b-collapse id="nav-collapse" is-nav>
           <b-navbar-nav>
-            <b-nav-item to="/second"> Second </b-nav-item>
+            <b-nav-item to="/createRecipe">  Créer une recette </b-nav-item>
           </b-navbar-nav>
 
           <!-- Right aligned nav items -->
