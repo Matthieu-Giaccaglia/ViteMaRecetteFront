@@ -6,7 +6,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
-        apiUrl: "http://localhost:2000/",
+        apiUrl: "https://vite-ma-recette-api.herokuapp.com/",
         apiUrlDistance: "https://vite-ma-recette-api.herokuapp.com/",
         apiUrlLocal: "http://localhost:2000/",
         pictureUrl: "https://media.tinygoblins.fr/media/",
