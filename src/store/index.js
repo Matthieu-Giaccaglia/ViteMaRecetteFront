@@ -136,21 +136,54 @@ export default new Vuex.Store({
         },
         async createRecipe(context, data) {
             try {
-                let formdata = new FormData()
-                formdata.append('myfile', data.picture, data.picture.name);
                 let response = await axios.post(context.getters.getApiUrl + "recipe", {
-                    name: data.name,
-                    description: data.description,
-                    picture: formdata,
-                    nbOfPerson: data.nbOfPerson,
-                    ingredients: data.ingredients,
-                    steps: data.steps
-                }, {
+                        name: data.name,
+                        description: data.description,
+                        picture: data.picture,
+                        nbOfPerson: data.nbOfPerson,
+                        ingredients: JSON.stringify(data.ingredients),
+                        steps: JSON.stringify(data.steps)
+                    }
+                    , {
+                        headers: {
+                            Authorization: 'Bearer ' + context.state.jwt
+                        }
+                    })
+
+                if (response)
+                    console.log(response.data)
+            } catch (err) {
+                console.log(err)
+            }
+        },
+        async deleteRecipe(context, id) {
+            try {
+                let response = await axios.delete(context.getters.getApiUrl + "recipe/" + id, {
                     headers: {
-                        //'Content-Type':'multipart/form-data',
                         Authorization: 'Bearer ' + context.state.jwt
                     }
                 })
+                if (response)
+                    console.log(response.data)
+            } catch (err) {
+                console.log(err)
+            }
+        },
+        async updateRecipe(context, data) {
+            try {
+                let response = await axios.put(context.getters.getApiUrl + "recipe/" + data.id, {
+                        name: data.name,
+                        description: data.description,
+                        picture: data.picture,
+                        nbOfPerson: data.nbOfPerson,
+                        ingredients: JSON.stringify(data.ingredients),
+                        steps: JSON.stringify(data.steps)
+                    }
+                    , {
+                        headers: {
+                            Authorization: 'Bearer ' + context.state.jwt
+                        }
+                    })
 
                 if (response)
                     console.log(response.data)

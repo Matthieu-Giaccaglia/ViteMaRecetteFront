@@ -1,18 +1,19 @@
 <template>
   <div id="container">
-    <CreateRecipe />
+    <RecipeForm />
   </div>
 </template>
 
 <script>
-import CreateRecipe from "@/components/Recipes/CreateRecipe";
+import RecipeForm from "@/components/Recipes/RecipeForm";
 
 
 export default {
   name: "CreateRecipeRoute",
   components: {
-    CreateRecipe
+    RecipeForm
   }
+
 }
 </script>
 

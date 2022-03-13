@@ -49,7 +49,8 @@
         </b-list-group-item>
       </b-list-group>
     </div>
-
+    <b-button :to="'/updateRecipe/'+this.id" v-if="creator.email === $store.state.user.email" >Modifier</b-button>
+    <b-button @click="deleteRecipe" v-if="creator.email === $store.state.user.email" >Supprimer</b-button>
   </div>
 </template>
 
@@ -59,6 +60,11 @@ import {mapGetters} from "vuex";
 
 export default {
   name: "Recipe",
+  methods : {
+    deleteRecipe(){
+      this.$store.dispatch('deleteRecipe',this.id);
+    }
+  },
   props: [
     "id",
     "name",

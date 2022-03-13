@@ -1,6 +1,6 @@
 <template>
   <div id="container">
-    <div>Home page</div>
+    <br> <!-- this is an easter egg for romain le breton -->
     <AllRecipes />
   </div>
 </template>

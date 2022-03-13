@@ -8,6 +8,7 @@ import SignupRoute from "@/pages/SignupRoute";
 import RecipeRoute from "@/pages/RecipeRoute";
 import BadUrlRoute from "@/pages/BadUrlRoute";
 import CreateRecipeRoute from "@/pages/CreateRecipeRoute";
+import UpdateRecipeRoute from "@/pages/UpdateRecipeRoute";
 
 
 Vue.use(Router);
@@ -44,6 +45,11 @@ const router = new Router({
       path: "/createRecipe",
       name: "createRecipe",
       component: CreateRecipeRoute
+    },
+    {
+      path: "/updateRecipe/:id",
+      name: "updateRecipe",
+      component: UpdateRecipeRoute
     },
     {
       path: '/*',

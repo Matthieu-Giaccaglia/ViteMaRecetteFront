@@ -4,8 +4,6 @@
         :img-src="realPicture"
         img-alt="Image"
         img-top
-        img-width="318px"
-        img-height="179px"
         tag="article"
         style="max-width: 20rem; min-height: 100%"
         class="mb-2"
@@ -37,7 +35,7 @@ export default {
     "id"
   ],
   created() {
-    this.realPicture = this.pictureUrl + this.picture
+    this.realPicture = this.picture
   },
   computed: {
     ...mapGetters({
@@ -46,3 +44,11 @@ export default {
   }
 };
 </script>
+
+<style>
+img {
+  width : 318px;
+  object-fit: contain;
+  height : 179px;
+}
+</style>

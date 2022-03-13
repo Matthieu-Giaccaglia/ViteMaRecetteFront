@@ -1,11 +1,11 @@
 <template>
 <div>
   <Recipe v-if="recipe != null"
-    :id="recipe.id"
+    :id="recipe._id"
     :name="recipe.name"
     :description="recipe.description"
     :ingredients="recipe.ingredients"
-    :picture="this.pictureUrl +recipe.picture"
+    :picture="recipe.picture"
     :steps="recipe.steps"
     :nb-of-person="recipe.nbOfPerson"
     :creator="recipe.users"
@@ -35,22 +35,14 @@ export default {
     }
   },
 
-  mounted() {
-    this.$store.dispatch('getRecipeFromDB', this.$route.params.id)
-    .then(response => {
-
-      if (response) {
-        console.log('RecipeRoute : Recipe founded')
-        console.log(response.users)
-        this.recipe = response
-      } else {
-        console.log('RecipeRoute : Recipe not found')
-        this.noRecipe = true
-      }
-    }).catch(() => {
+  async mounted() {
+    try {
+      this.recipe = await this.$store.dispatch('getRecipeFromDB', this.$route.params.id)
+      if (!this.recipe) this.noRecipe = true;
+    } catch (e) {
       this.error = true
       console.log('RecipeRoute : Internal Error')
-    })
+    }
   },
 
   computed: {

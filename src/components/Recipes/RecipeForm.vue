@@ -47,6 +47,7 @@
                 id="input-group-2"
                 label="Image d'illustration de la recette :"
                 label-for="input-2"
+                v-model="formCreatRecipe.picture"
             >
               <b-form-file name="file1" id="file1" ref="myFiles" @change="previewFiles"/>
             </b-form-group>
@@ -85,7 +86,7 @@
                                required></b-form-select>
 
                 <b-button is-text style="cursor: pointer" v-if="index>0"
-                          @click="this.formCreatRecipe.ingredients.splice(index, 1)">
+                          @click="formCreatRecipe.ingredients.splice(index, 1)">
                   -
                 </b-button>
               </b-input-group>
@@ -93,7 +94,6 @@
                 <b-button @click="addIngredient">+</b-button>
               </div>
             </div>
-
 
 
             <div>
@@ -125,15 +125,13 @@
               </div>
             </div>
 
-
-            <b-button type="submit" variant="primary">Créer une recette</b-button>
+            <b-button type="submit" v-if="existing" variant="primary">Modifier cette recette</b-button>
+            <b-button type="submit" v-if="!existing" variant="primary">Créer une recette</b-button>
           </b-form>
 
         </b-card-body>
       </b-card>
     </div>
-
-
   </div>
 
 
@@ -143,31 +141,35 @@
 import {mapGetters, mapActions} from "vuex";
 
 export default {
-  name: "CreateRecipe",
+  name: "RecipeForm",
+  props: [
+    "id",
+    "name",
+    "description",
+    "picture",
+    "ingredients",
+    "nbOfPerson",
+    "steps",
+    "existing",
+  ],
   data() {
 
     return {
-      nbStep: 1,
       formCreatRecipe: {
-        name: "",
-        description: "",
-        picture: "",
-        ingredients: [{
-          name: "",
-          quantity: "",
-          unit: "",
-        }],
-        nbOfPerson: "",
-        steps: [{
-          step: 1,
-          action: "",
-        }],
+        id: this.id,
+        name: this.name,
+        description: this.description,
+        picture: this.picture,
+        ingredients: this.ingredients,
+        nbOfPerson: this.nbOfPerson,
+        steps: this.steps,
       },
       showDismissibleAlert: false,
       messageAlert: "",
       units: ['g', 'l', 'c. à c.', 'c. à s.', "", "pincée"]
     };
-  },
+  }
+  ,
   methods: {
     addStep() {
       console.log("ok")
@@ -175,7 +177,8 @@ export default {
         step: this.formCreatRecipe.steps.length + 1,
         action: ""
       })
-    },
+    }
+    ,
     addIngredient() {
       console.log("ok")
       this.formCreatRecipe.ingredients.push({
@@ -183,28 +186,44 @@ export default {
         quantity: "",
         unit: "",
       })
-    },
+    }
+    ,
     async sendRecipe(event) {
       event.preventDefault();
-      console.log(this.formCreatRecipe)
-      await this.$store.dispatch('createRecipe', this.formCreatRecipe);
+      if (this.existing)
+        await this.$store.dispatch('updateRecipe', this.formCreatRecipe);
+      else
+        await this.$store.dispatch('createRecipe', this.formCreatRecipe);
 
-    },
-    previewFiles(event) {
-      let image = event.target.files || event.dataTransfer.files
-      this.formCreatRecipe.picture = image[0];
     }
-  },
+    ,
+    async previewFiles(event) {
+      let reader = new FileReader();
+      await new Promise(resolve => {
+        reader.onload = ev => {
+          this.formCreatRecipe.picture = reader.result
+          resolve(ev.target.result)
+        }
+        reader.readAsDataURL(event.target.files[0])
+      })
+    }
+  }
+  ,
   computed: {
     validation() {
       return this.formCreatRecipe.password === this.formCreatRecipe.passwordCopy
-    },
-    ...mapGetters({
-      urlApi: "getApiUrl",
-    }),
-    ...mapActions({
-      createUser: "createUser",
-    }),
-  },
-};
+    }
+    ,
+    ...
+        mapGetters({
+          urlApi: "getApiUrl",
+        }),
+    ...
+        mapActions({
+          createUser: "createUser",
+        }),
+  }
+  ,
+}
+;
 </script>
