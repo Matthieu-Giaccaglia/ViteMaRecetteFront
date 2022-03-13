@@ -150,23 +150,9 @@ export default new Vuex.Store({
                         }
                     })
 
-                if (response)
-                    console.log(response.data)
+                return response.data
             } catch (err) {
-                console.log(err)
-            }
-        },
-        async deleteRecipe(context, id) {
-            try {
-                let response = await axios.delete(context.getters.getApiUrl + "recipe/" + id, {
-                    headers: {
-                        Authorization: 'Bearer ' + context.state.jwt
-                    }
-                })
-                if (response)
-                    console.log(response.data)
-            } catch (err) {
-                console.log(err)
+                return {success: false, message: 'Internal server error'};
             }
         },
         async updateRecipe(context, data) {
@@ -185,10 +171,21 @@ export default new Vuex.Store({
                         }
                     })
 
-                if (response)
-                    console.log(response.data)
+                return response.data
             } catch (err) {
-                console.log(err)
+                return {success: false, message: 'Internal server error'};
+            }
+        },
+        async deleteRecipe(context, id) {
+            try {
+                let response = await axios.delete(context.getters.getApiUrl + "recipe/" + id, {
+                    headers: {
+                        Authorization: 'Bearer ' + context.state.jwt
+                    }
+                })
+                return response.data
+            } catch (err) {
+                return {success: false, message: 'Internal server error'};
             }
         },
         disconnect(context) {

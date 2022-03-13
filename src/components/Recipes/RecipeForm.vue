@@ -1,5 +1,5 @@
 <template>
-  <div class="aside-container d-flex mt-5 flex-column">
+  <div class="aside-container d-flex mt-5 mb-5 flex-column">
     <div style="width: 95%" class="m-auto">
       <div>
         <b-alert v-model="showDismissibleAlert" variant="danger" dismissible>
@@ -8,7 +8,7 @@
       </div>
 
       <b-card
-          title="Creer une recette"
+          :title="(existing? 'Modifier' : 'Créer') + ' ma recette'"
           tag="article"
       >
         <b-card-body>
@@ -49,6 +49,7 @@
                 label-for="input-2"
                 v-model="formCreatRecipe.picture"
             >
+              <img :src="formCreatRecipe.picture" class="form-recipe-img mb-2">
               <b-form-file name="file1" id="file1" ref="myFiles" @change="previewFiles"/>
             </b-form-group>
 
@@ -79,19 +80,19 @@
               >
                 <b-form-input placeholder="nom" type="text" v-model="ingredient.name" required></b-form-input>
 
-                <b-form-input min="0" placeholder="quantité" type="number" v-model="ingredient.quantity"
+                <b-form-input min="0" step=".01" placeholder="quantité" type="number" v-model="ingredient.quantity"
                               required></b-form-input>
 
                 <b-form-select :options="units" placeholder="" type="text" v-model="ingredient.unit"
                                required></b-form-select>
 
-                <b-button is-text style="cursor: pointer" v-if="index>0"
+                <b-button variant="danger" is-text style="cursor: pointer" v-if="index>0"
                           @click="formCreatRecipe.ingredients.splice(index, 1)">
                   -
                 </b-button>
               </b-input-group>
               <div style="text-align: right">
-                <b-button @click="addIngredient">+</b-button>
+                <b-button variant="success" @click="addIngredient">+</b-button>
               </div>
             </div>
 
@@ -115,27 +116,51 @@
                     required
 
                 />
-                <b-button is-text style="cursor: pointer" v-if="index>0"
-                          @click="formCreatRecipe.steps.splice(index, 1)">
+                <b-button variant="danger" is-text style="cursor: pointer" v-if="index>0" @click="formCreatRecipe.steps.splice(index, 1)">
                   -
                 </b-button>
               </b-input-group>
               <div style="text-align: right; margin-bottom: 10px">
-                <b-button @click="addStep">+</b-button>
+                <b-button variant="success" @click="addStep">+</b-button>
               </div>
             </div>
 
-            <b-button type="submit" v-if="existing" variant="primary">Modifier cette recette</b-button>
-            <b-button type="submit" v-if="!existing" variant="primary">Créer une recette</b-button>
+            <b-button type="submit" v-if="existing && !isLoading" variant="primary">Modifier cette recette</b-button>
+            <b-button type="submit" v-if="!existing && !isLoading" variant="primary">Créer une recette</b-button>
           </b-form>
 
         </b-card-body>
       </b-card>
     </div>
+    <div class="my-spinner" v-if="isLoading">
+      <b-spinner variant="primary" label="Large Spinner" style="width: 10rem; height: 10rem; margin: auto"></b-spinner>
+    </div>
   </div>
 
 
 </template>
+
+<style>
+.form-recipe-img {
+  max-height: 75px;
+  object-fit: contain;
+  border: silver 1px solid;
+  border-radius: 5px;
+}
+.my-spinner {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 1300;
+  display: flex;
+  background-color: #11111182;
+}
+</style>
 
 <script>
 import {mapGetters, mapActions} from "vuex";
@@ -160,13 +185,14 @@ export default {
         name: this.name,
         description: this.description,
         picture: this.picture,
-        ingredients: this.ingredients,
+        ingredients: this.ingredients ? this.ingredients : [{name: "", quantity: "", unit: ""}],
         nbOfPerson: this.nbOfPerson,
-        steps: this.steps,
+        steps: this.steps ? this.steps : [{step: 1, action: ""}],
       },
       showDismissibleAlert: false,
       messageAlert: "",
-      units: ['g', 'l', 'c. à c.', 'c. à s.', "", "pincée"]
+      units: ['gramme', 'litre', 'c. à c.', 'c. à s.', "", "pincée", 'cube', 'noix', 'branche', 'gousse','sachet'],
+      isLoading: false,
     };
   }
   ,
@@ -190,13 +216,21 @@ export default {
     ,
     async sendRecipe(event) {
       event.preventDefault();
+      this.isLoading = true
+      let response;
       if (this.existing)
-        await this.$store.dispatch('updateRecipe', this.formCreatRecipe);
+        response = await this.$store.dispatch('updateRecipe', this.formCreatRecipe);
       else
-        await this.$store.dispatch('createRecipe', this.formCreatRecipe);
+        response = await this.$store.dispatch('createRecipe', this.formCreatRecipe);
 
-    }
-    ,
+      if (response.success) {
+        window.alert("Recette sauvegardée !")
+        window.location = "/"
+      } else {
+        window.alert("Votre recette n'a pas pu être sauvegardé :\n" + response.message)
+        this.isLoading = false
+      }
+    },
     async previewFiles(event) {
       let reader = new FileReader();
       await new Promise(resolve => {

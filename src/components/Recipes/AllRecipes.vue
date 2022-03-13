@@ -5,8 +5,10 @@
         <b-col
             v-for="recipe in recipes"
             :key="recipe._id"
+            class="mb-2"
         >
           <CardRecipe
+
               :name="recipe.name"
               :description="recipe.description"
               :picture="recipe.picture"
@@ -14,6 +16,7 @@
           >
           </CardRecipe>
         </b-col>
+
       </b-row>
 
     </b-container>

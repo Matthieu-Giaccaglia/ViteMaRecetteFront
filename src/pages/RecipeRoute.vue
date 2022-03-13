@@ -66,4 +66,8 @@ export default {
   margin-right: auto;
   margin-top: 350px;
 }
+
+.spinner-border {
+  border-width: 0.75rem;
+}
 </style>

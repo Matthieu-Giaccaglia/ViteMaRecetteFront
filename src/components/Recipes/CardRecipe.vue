@@ -1,19 +1,20 @@
 <template>
     <b-card
-        :title="name"
-        :img-src="realPicture"
-        img-alt="Image"
-        img-top
         tag="article"
-        style="max-width: 20rem; min-height: 100%"
-        class="mb-2"
+        style="max-width: 20rem; min-height: 100%; cursor: pointer"
+        class="mr-2"
+        @click="$router.push({name: 'recipe', params:{id: id}})"
+        no-body
     >
+      <b-card-img :src="realPicture" class="card-recipe-img" top>
+      </b-card-img>
       <b-card-body>
-        <b-card-text>
+        <b-card-title style="width: 100%; overflow: hidden; white-space: nowrap;text-overflow: ellipsis;">
+          {{name}}
+        </b-card-title>
+        <b-card-text style="text-align: justify">
           {{ description }}
         </b-card-text>
-
-        <b-button :to="'/recipe/' + id" variant="primary">Cuisiner la recette</b-button>
       </b-card-body>
     </b-card>
 </template>
@@ -46,7 +47,7 @@ export default {
 </script>
 
 <style>
-img {
+.card-recipe-img {
   width : 318px;
   object-fit: contain;
   height : 179px;

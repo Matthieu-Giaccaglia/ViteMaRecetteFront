@@ -2,8 +2,17 @@
   <div class="recipe-content">
     <h1>Recette {{ this.name }}</h1>
     <p>par {{ this.creator.username }}</p>
+    <div class="mb-2">
+      <b-button variant="primary" class="mr-2" :to="'/updateRecipe/'+this.id"
+                v-if="creator.email === $store.state.user.email">Modifier
+      </b-button>
+      <b-button variant="danger" class="ml-2" @click="deleteRecipe" v-if="creator.email === $store.state.user.email">
+        Supprimer
+      </b-button>
+    </div>
 
-    <img :src="picture" alt="">
+
+    <img class="recipe-img" :src="picture" alt="">
 
     <div class="recipe-description mt-5">
       <h2>Description</h2>
@@ -14,13 +23,15 @@
       <div class="d-flex">
         <h2>Ingrédients</h2>
         <h3 class="ml-auto">
-          Pour {{ this.nbOfPerson }} personnes
+          Pour
+          <b-form-spinbutton id="sb-inline" v-model="nbOfPerson_" inline min="1"></b-form-spinbutton>
+          personnes
         </h3>
       </div>
       <b-container fluid="md">
         <b-row>
           <b-col class="col" cols="6"
-                 v-for="ingredient in ingredients"
+                 v-for="ingredient in ingredients_"
                  :key="ingredient.name"
           >
             <div class="recipe-ingredient">
@@ -28,7 +39,7 @@
                 {{ ingredient.name }}
               </div>
               <div class="recipe-quantity text-right">
-                {{ ingredient.quantity + ' ' + ingredient.unit }}
+                {{ (ingredient.quantity * (nbOfPerson_ / nbOfPerson)) + ' ' + ingredient.unit }}
               </div>
             </div>
 
@@ -49,8 +60,9 @@
         </b-list-group-item>
       </b-list-group>
     </div>
-    <b-button :to="'/updateRecipe/'+this.id" v-if="creator.email === $store.state.user.email" >Modifier</b-button>
-    <b-button @click="deleteRecipe" v-if="creator.email === $store.state.user.email" >Supprimer</b-button>
+    <div class="my-spinner" v-if="isLoading">
+      <b-spinner variant="primary" label="Large Spinner" style="width: 10rem; height: 10rem; margin: auto"></b-spinner>
+    </div>
   </div>
 </template>
 
@@ -60,9 +72,26 @@ import {mapGetters} from "vuex";
 
 export default {
   name: "Recipe",
-  methods : {
-    deleteRecipe(){
-      this.$store.dispatch('deleteRecipe',this.id);
+  methods: {
+    async deleteRecipe() {
+      this.isLoading = true
+      let response = await this.$store.dispatch('deleteRecipe', this.id);
+
+      if (response.success) {
+        window.alert("Votre recette a été supprimé !")
+        window.location = "/"
+      } else {
+        window.alert("Votre recette n'a pas pu être supprimé :\n" + response.message)
+        this.isLoading = true
+      }
+
+    },
+  },
+  data() {
+    return {
+      nbOfPerson_: this.nbOfPerson,
+      isLoading: false,
+      ingredients_: {...this.ingredients}
     }
   },
   props: [
@@ -79,7 +108,7 @@ export default {
     ...mapGetters({
       pictureUrl: "getPictureUrl",
     }),
-  }
+  },
 }
 </script>
 
@@ -127,8 +156,9 @@ export default {
   min-height: 40px;
 }
 
-img {
-  width: 100%;
+.recipe-img {
+  max-height: 420px;
+  object-fit: contain;
   border: silver 2px solid;
   border-radius: 20px;
 }
