@@ -1,6 +1,5 @@
 <template>
   <div id="container">
-    qsefqsfqafz
     <CreateRecipe />
   </div>
 </template>

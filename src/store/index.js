@@ -140,23 +140,14 @@ export default new Vuex.Store({
                 formdata.append('myfile', data.picture, data.picture.name);
                 let response = await axios.post(context.getters.getApiUrl + "recipe", {
                     name: data.name,
+                    description: data.description,
                     picture: formdata,
-                    description: "grrf",
-                    ingredients: [{
-                        name: "rd",
-                        quantity: 1,
-                        'unit': 'ok'
-                    }],
-                    steps: [{
-                        step: 1,
-                        action: "iojh"
-                    }],
-                    nbOfPerson: 1
-
-
+                    nbOfPerson: data.nbOfPerson,
+                    ingredients: data.ingredients,
+                    steps: data.steps
                 }, {
                     headers: {
-                        'Content-Type':'multipart/form-data',
+                        //'Content-Type':'multipart/form-data',
                         Authorization: 'Bearer ' + context.state.jwt
                     }
                 })

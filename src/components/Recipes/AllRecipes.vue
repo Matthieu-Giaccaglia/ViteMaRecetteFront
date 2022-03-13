@@ -1,14 +1,23 @@
 <template>
   <div>
-    <CardRecipe
-      v-for="recipe in recipes"
-      :key="recipe._id"
-      :name="recipe.name"
-      :description="recipe.description"
-      :picture="recipe.picture"
-      :id="recipe._id"
-    >
-    </CardRecipe>
+    <b-container>
+      <b-row>
+        <b-col
+            v-for="recipe in recipes"
+            :key="recipe._id"
+        >
+          <CardRecipe
+              :name="recipe.name"
+              :description="recipe.description"
+              :picture="recipe.picture"
+              :id="recipe._id"
+          >
+          </CardRecipe>
+        </b-col>
+      </b-row>
+
+    </b-container>
+
   </div>
 </template>
 

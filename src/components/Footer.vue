@@ -1,6 +1,6 @@
 <template>
   <footer>
-    <div>
+    <div style="text-align: center">
       Copyright ViteMaRecette : Tous Droits Réservés
     </div>
   </footer>
