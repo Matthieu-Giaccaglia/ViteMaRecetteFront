@@ -198,7 +198,6 @@ export default {
   ,
   methods: {
     addStep() {
-      console.log("ok")
       this.formCreatRecipe.steps.push({
         step: this.formCreatRecipe.steps.length + 1,
         action: ""
@@ -206,7 +205,6 @@ export default {
     }
     ,
     addIngredient() {
-      console.log("ok")
       this.formCreatRecipe.ingredients.push({
         name: "",
         quantity: "",

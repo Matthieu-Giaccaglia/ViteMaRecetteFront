@@ -24,8 +24,12 @@
                   v-model="formSignIn.username"
                   type="text"
                   placeholder="Entrez votre pseudo"
+                  :state="validUsername"
                   required
               ></b-form-input>
+              <b-form-invalid-feedback id="input-live-feedback">
+                Ce pseudo est déjà utilisé.
+              </b-form-invalid-feedback>
             </b-form-group>
 
 
@@ -40,7 +44,11 @@
                   type="email"
                   placeholder="Entrez votre email"
                   required
+                  :state="validEmail"
               ></b-form-input>
+              <b-form-invalid-feedback id="input-live-feedback">
+                Un compte avec cet email existe déjà.
+              </b-form-invalid-feedback>
             </b-form-group>
 
             <b-form-group
@@ -53,8 +61,12 @@
                   type="password"
                   v-model="formSignIn.password"
                   placeholder="Entrez votre mot de passe"
+                  :state="passwordMin"
                   required
               ></b-form-input>
+              <b-form-invalid-feedback id="input-live-feedback">
+                Il faut au moins 8 caractères
+              </b-form-invalid-feedback>
 
             </b-form-group>
 
@@ -70,12 +82,12 @@
                   placeholder="Entrez votre mot de passe"
                   required
               ></b-form-input>
-              <b-form-invalid-feedback :state="validation">
+              <b-form-invalid-feedback :state="passwordMatch">
                 Les mots de passe ne correspondent pas.
               </b-form-invalid-feedback>
             </b-form-group>
 
-            <b-button type="submit" variant="primary">Créer un compte</b-button>
+            <b-button :disabled="validForm" type="submit" variant="primary">Créer un compte</b-button>
           </b-form>
 
         </b-card-body>
@@ -86,7 +98,9 @@
       </div>
     </div>
 
-
+    <div class="my-spinner" v-if="isLoading">
+      <b-spinner variant="primary" label="Large Spinner" style="width: 10rem; height: 10rem; margin: auto"></b-spinner>
+    </div>
   </div>
 
 
@@ -105,13 +119,17 @@ export default {
         password: "",
         passwordCopy: "",
       },
+      isLoading: false,
       showDismissibleAlert: false,
       messageAlert: "",
+      invalidUsername: [],
+      invalidEmail: [],
     };
   },
   methods: {
-    async onSignIn(event) {
+    onSignIn: async function (event) {
       event.preventDefault();
+      this.isLoading = true
       if (this.formSignIn.password === this.formSignIn.passwordCopy) {
         let userIsCreate = await this.$store.dispatch("createUser", {
           username: this.formSignIn.username,
@@ -119,11 +137,20 @@ export default {
           password: this.formSignIn.password
         })
 
-        if (userIsCreate === "success") {
+        this.isLoading = false
+        if (userIsCreate.success) {
           this.$router.push({name: "login", query: {newUser: "true"}})
-        } else {
+        } else if (userIsCreate.message === 'Internal server error') {
           this.showDismissibleAlert = true
-          this.messageAlert = "Erreur interne."
+          this.messageAlert = 'Erreur serveur. Merci de réessayer ultérieurement'
+        } else {
+          userIsCreate.message.forEach(field => {
+            if (field.field === 'email'){
+              this.invalidEmail.push(this.formSignIn.email)
+            } if (field.field === 'username') {
+              this.invalidUsername.push(this.formSignIn.username)
+            }
+          })
         }
 
       } else {
@@ -133,8 +160,20 @@ export default {
     }
   },
   computed: {
-    validation() {
+    passwordMatch() {
       return this.formSignIn.password === this.formSignIn.passwordCopy
+    },
+    passwordMin() {
+      return this.formSignIn.password.length >= 8
+    },
+    validUsername(){
+      return this.invalidUsername.includes(this.formSignIn.username) ? false : null
+    },
+    validEmail(){
+      return this.invalidEmail.includes(this.formSignIn.email) ? false : null
+    },
+    validForm() {
+      return !(this.passwordMatch && this.passwordMin && this.validUsername===null && this.validEmail===null)
     },
     ...mapGetters({
       urlApi: "getApiUrl",

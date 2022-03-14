@@ -58,7 +58,9 @@
         <b-link to="/sign-up" >Pas de compte ? Inscrivez-vous !</b-link>
       </div>
     </div>
-
+    <div class="my-spinner" v-if="isLoading">
+      <b-spinner variant="primary" label="Large Spinner" style="width: 10rem; height: 10rem; margin: auto"></b-spinner>
+    </div>
   </div>
 
 </template>
@@ -74,6 +76,7 @@ export default {
         email: "",
         password: "",
       },
+      isLoading: false,
       showDismissibleAlertSuccess: false,
       showDismissibleAlertDanger: false,
       messageAlert: ""
@@ -82,12 +85,13 @@ export default {
   methods: {
     async onSubmit(event) {
       event.preventDefault();
+      this.isLoading = true;
       let connectionSuccess = await this.$store.dispatch('connection', {
         email: this.form.email,
         password: this.form.password
       })
-      console.log(connectionSuccess)
 
+      this.isLoading = false;
       if(connectionSuccess === "success") {
         this.$router.push({name: "homePage"})
       } else if (connectionSuccess === "bad_credential") {

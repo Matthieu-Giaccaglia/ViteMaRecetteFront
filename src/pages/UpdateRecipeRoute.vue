@@ -36,7 +36,6 @@ export default {
       if (!this.recipe) this.noRecipe = true;
     } catch (e) {
       this.error = true
-      console.log('RecipeRoute : Internal Error')
     }
   },
 }

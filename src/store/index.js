@@ -46,7 +46,7 @@ export default new Vuex.Store({
     mutations: {
         setJwt(state, jwt) {
             state.jwt = jwt;
-            window.localStorage.setItem("jwt", jwt);
+            Vue.$cookies.set('jwt', jwt,0)
         },
         setRecipes(state, recipes) {
             state.recipes = recipes;
@@ -55,15 +55,14 @@ export default new Vuex.Store({
             state.user.email = user.email
             state.user.username = user.username
             state.user._id = user._id;
-            console.log(user)
-            window.localStorage.setItem("user", JSON.stringify(user))
+            Vue.$cookies.set('user', user,0)
         },
     },
     actions: {
         async initJwt(context) {
-            if (window.localStorage.getItem("jwt") && window.localStorage.getItem("user")) {
-                context.commit("setJwt", window.localStorage.getItem("jwt"))
-                context.commit("setUser", JSON.parse(window.localStorage.getItem("user")))
+            if (Vue.$cookies.isKey('jwt') && Vue.$cookies.isKey('user')) {
+                context.commit("setJwt", Vue.$cookies.get('jwt'))
+                context.commit("setUser", Vue.$cookies.get('user'))
                 await context.dispatch("setRecipesAction")
             }
         },
@@ -75,7 +74,6 @@ export default new Vuex.Store({
                 })
 
                 if (response.data.success) {
-                    console.log(response.data.user)
                     context.commit("setJwt", response.data.jwt)
                     await context.dispatch("setRecipesAction")
                     context.commit("setUser", response.data.user)
@@ -84,20 +82,20 @@ export default new Vuex.Store({
                     return "bad_credential"
                 }
             } catch (err) {
-                console.log(err)
                 return "server_error"
             }
         },
         async createUser(context, data) {
             try {
-                await axios.post(context.getters.getApiUrl + "signup", {
+                let response = await axios.post(context.getters.getApiUrl + "signup", {
                     email: data.email,
                     password: data.password,
                     username: data.username
                 })
-                return "success"
+                console.log(response)
+                return response.data
             } catch (err) {
-                return "server_error"
+                return {success: false, message: 'Internal server error'}
             }
         },
         async setRecipesAction(context) {
@@ -107,7 +105,6 @@ export default new Vuex.Store({
                 })
                 context.commit("setRecipes", response.data);
             } catch (err) {
-                console.log(err)
                 return false
             }
         },
@@ -130,7 +127,6 @@ export default new Vuex.Store({
                 }
 
             } catch (err) {
-                console.log(err)
                 return false
             }
         },
