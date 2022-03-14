@@ -189,7 +189,8 @@ export default new Vuex.Store({
             context.state.user._id = null
             context.state.user.email = null
             context.state.user.username = null
-            window.localStorage.clear()
+            this.$cookies.remove("user")
+            this.$cookies.remove("jwt")
         }
     }
 });
