@@ -20,14 +20,20 @@
     </div>
 
     <div class="recipe-ingredients mt-5">
-      <div class="d-flex">
-        <h2>Ingrédients</h2>
-        <h3 class="ml-auto">
-          Pour
-          <b-form-spinbutton id="sb-inline" v-model="nbOfPerson_" inline min="1"></b-form-spinbutton>
-          personnes
-        </h3>
-      </div>
+      <b-container fluid="lg">
+        <b-row>
+          <b-col style="border: none"><h3>Ingrédients</h3></b-col>
+          <b-col style="border: none">
+            <h3 class="ml-auto text-right" style="width: max-content">
+              Pour
+              <b-form-spinbutton id="sb-inline" v-model="nbOfPerson_" inline min="1"></b-form-spinbutton>
+              personnes
+            </h3>
+          </b-col>
+        </b-row>
+
+
+      </b-container>
       <b-container fluid="md">
         <b-row>
           <b-col class="col" cols="6"
@@ -75,8 +81,9 @@ export default {
   methods: {
     async deleteRecipe() {
       this.isLoading = true
-      let response = await this.deleteRecipe(this.id);
 
+      let response = await this.deleteRecipeDB(this.id);
+      console.log(response);
       if (response.success) {
         window.alert("Votre recette a été supprimé !")
         window.location = "/"
@@ -87,7 +94,7 @@ export default {
 
     },
     ...mapActions({
-      deleteRecipe: 'deleteRecipe'
+      deleteRecipeDB: 'deleteRecipe'
     })
   },
   data() {
@@ -156,6 +163,7 @@ export default {
 
 .recipe-img {
   max-height: 420px;
+  width: 90%;
   object-fit: contain;
   border: silver 2px solid;
   border-radius: 20px;

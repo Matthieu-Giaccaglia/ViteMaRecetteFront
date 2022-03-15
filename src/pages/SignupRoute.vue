@@ -95,7 +95,7 @@
         </b-card>
 
         <div class="mt-2">
-          <b-link :to="{name: 'login'}" >J'ai déjà un compte ! Vite, connectez-moi !</b-link>
+          <b-link :to="{name: 'login'}" >J'ai déjà un compte ! Vite, ma connexion !</b-link>
         </div>
       </div>
 
@@ -141,7 +141,7 @@ export default {
         this.isLoading = false
         if (userIsCreate.success) {
           this.$router.push({name: "login", query: {newUser: "true"}})
-        } else if (userIsCreate.message === 'Internal server error') {
+        } else if (userIsCreate.message === 'Internal server error' || !userIsCreate.message) {
           this.showDismissibleAlert = true
           this.messageAlert = 'Erreur serveur. Merci de réessayer ultérieurement'
         } else {

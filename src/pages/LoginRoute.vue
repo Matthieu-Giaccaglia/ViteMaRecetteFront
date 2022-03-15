@@ -55,7 +55,7 @@
           </b-card-body>
         </b-card>
         <div class="mt-2">
-          <b-link :to="{name: 'signup'}">J'ai pas de compte ! Vite, inscrivez-moi !</b-link>
+          <b-link :to="{name: 'signup'}">J'ai pas de compte ! Vite, mon inscription !</b-link>
         </div>
       </div>
       <div class="my-spinner" v-if="isLoading">

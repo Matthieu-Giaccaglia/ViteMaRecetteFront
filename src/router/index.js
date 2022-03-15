@@ -22,12 +22,12 @@ const router = new Router({
       component: HomeRoute
     },
     {
-      path: "/vite-connectez-moi",
+      path: "/vite-ma-connexion",
       name: "login",
       component: LoginRoute
     },
     {
-      path: "/vite-inscrivez-moi",
+      path: "/vite-mon-inscription",
       name: "signup",
       component: SignupRoute
     },

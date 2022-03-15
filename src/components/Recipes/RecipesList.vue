@@ -65,9 +65,6 @@ export default {
       let min = (pageNumber - 1) * this.perPage
       let max = min + this.perPage
 
-      console.log('min',min);
-      console.log('max',max);
-
       if (max > this.recipes.length - 1)
         max = this.recipes.length - 1
 

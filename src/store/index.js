@@ -88,10 +88,10 @@ export default new Vuex.Store({
                     context.commit("setUser", response.data.user)
                     return {success: true}
                 } else {
-                    return {success: true, message: 'bad_credential'}
+                    return {success: false, message: 'bad_credential'}
                 }
             } catch (err) {
-                return {success: true, message: 'server_error'}
+                return {success: false, message: 'server_error'}
             }
         },
         logout(context) {
