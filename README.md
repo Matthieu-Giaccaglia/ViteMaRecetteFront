@@ -36,9 +36,6 @@ npm run lint
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
-##Fonctionnalités manquantes
- - La pagination sur la liste des recettes : On a pas eu le temps.
-
 ## Licence
 
 Copyright [2022] [Achalhi Ilyes,Giaccaglia Matthieu]
