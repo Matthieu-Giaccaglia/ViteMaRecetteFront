@@ -2,13 +2,13 @@ import Vue from "vue";
 import Router from "vue-router";
 import store from "@/store";
 import HomeRoute from "@/pages/HomeRoute";
-import SecondPageRoute from "@/pages/SecondPageRoute";
 import LoginRoute from "@/pages/LoginRoute";
 import SignupRoute from "@/pages/SignupRoute";
 import RecipeRoute from "@/pages/RecipeRoute";
 import BadUrlRoute from "@/pages/BadUrlRoute";
 import CreateRecipeRoute from "@/pages/CreateRecipeRoute";
 import UpdateRecipeRoute from "@/pages/UpdateRecipeRoute";
+import UserRecipeRoute from "@/pages/UserRecipeRoute";
 
 
 Vue.use(Router);
@@ -18,38 +18,38 @@ const router = new Router({
   routes: [
     {
       path: "/",
-      name: "homePage",
+      name: "allRecipe",
       component: HomeRoute
     },
     {
-      path: "/second",
-      name: "secondPage",
-      component: SecondPageRoute
-    },
-    {
-      path: "/login",
+      path: "/vite-connectez-moi",
       name: "login",
       component: LoginRoute
     },
     {
-      path: "/sign-up",
+      path: "/vite-inscrivez-moi",
       name: "signup",
       component: SignupRoute
     },
     {
-      path: "/recipe/:id",
+      path: "/vite-la-recette/:id",
       name: "recipe",
       component: RecipeRoute
     },
     {
-      path: "/createRecipe",
+      path: "/vite-ajoutez-ma-recette",
       name: "createRecipe",
       component: CreateRecipeRoute
     },
     {
-      path: "/updateRecipe/:id",
+      path: "/vite-modifier-ma-recette/:id",
       name: "updateRecipe",
       component: UpdateRecipeRoute
+    },
+    {
+      path: "/vite-mes-recettes",
+      name: "userRecipe",
+      component: UserRecipeRoute
     },
     {
       path: '/*',
@@ -69,9 +69,6 @@ router.beforeEach((to, from, next) => {
   } else {
     next()
   }
-
-
-
 });
 
 function isValideRouteForNoJWT(name) {

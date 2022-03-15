@@ -42,11 +42,20 @@ export default new Vuex.Store({
             }
             return false;
         },
+        getUserRecipe: (state) => {
+            let userRecipes = []
+            for (let i = 0; i < state.recipes.length; i++) {
+                if (state.recipes[i].users.email === state.user.email) {
+                    userRecipes.push(state.recipes[i])
+                }
+            }
+            return userRecipes;
+        }
     },
     mutations: {
         setJwt(state, jwt) {
             state.jwt = jwt;
-            Vue.$cookies.set('jwt', jwt,0)
+            Vue.$cookies.set('jwt', jwt, 0)
         },
         setRecipes(state, recipes) {
             state.recipes = recipes;
@@ -55,7 +64,7 @@ export default new Vuex.Store({
             state.user.email = user.email
             state.user.username = user.username
             state.user._id = user._id;
-            Vue.$cookies.set('user', user,0)
+            Vue.$cookies.set('user', user, 0)
         },
     },
     actions: {
@@ -66,7 +75,7 @@ export default new Vuex.Store({
                 await context.dispatch("setRecipesAction")
             }
         },
-        async connection(context, data) {
+        async login(context, data) {
             try {
                 let response = await axios.post(context.getters.getApiUrl + "login", {
                     email: data.email,
@@ -77,22 +86,29 @@ export default new Vuex.Store({
                     context.commit("setJwt", response.data.jwt)
                     await context.dispatch("setRecipesAction")
                     context.commit("setUser", response.data.user)
-                    return "success"
+                    return {success: true}
                 } else {
-                    return "bad_credential"
+                    return {success: true, message: 'bad_credential'}
                 }
             } catch (err) {
-                return "server_error"
+                return {success: true, message: 'server_error'}
             }
         },
-        async createUser(context, data) {
+        logout(context) {
+            context.state.jwt = null
+            context.state.user._id = null
+            context.state.user.email = null
+            context.state.user.username = null
+            Vue.$cookies.remove("user")
+            Vue.$cookies.remove("jwt")
+        },
+        async signIn(context, data) {
             try {
                 let response = await axios.post(context.getters.getApiUrl + "signup", {
                     email: data.email,
                     password: data.password,
                     username: data.username
                 })
-                console.log(response)
                 return response.data
             } catch (err) {
                 return {success: false, message: 'Internal server error'}
@@ -184,13 +200,5 @@ export default new Vuex.Store({
                 return {success: false, message: 'Internal server error'};
             }
         },
-        disconnect(context) {
-            context.state.jwt = null
-            context.state.user._id = null
-            context.state.user.email = null
-            context.state.user.username = null
-            this.$cookies.remove("user")
-            this.$cookies.remove("jwt")
-        }
     }
 });

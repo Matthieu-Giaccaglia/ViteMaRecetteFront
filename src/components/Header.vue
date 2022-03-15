@@ -2,13 +2,14 @@
   <header>
     <div>
       <b-navbar toggleable="lg" type="dark" variant="info">
-        <b-navbar-brand to="/">Home</b-navbar-brand>
+        <b-navbar-brand :to="{name: 'allRecipe'}">Vite Les Recettes !</b-navbar-brand>
 
         <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
         <b-collapse id="nav-collapse" is-nav>
           <b-navbar-nav>
-            <b-nav-item to="/createRecipe">  Créer une recette </b-nav-item>
+            <b-nav-item :to="{name: 'userRecipe'}">Vite, mes recette !</b-nav-item>
+            <b-nav-item :to="{name: 'createRecipe'}">Vite, ajoutez ma recette !</b-nav-item>
           </b-navbar-nav>
 
           <!-- Right aligned nav items -->
@@ -18,8 +19,7 @@
               <template #button-content>
                 <em>{{ username }}</em>
               </template>
-              <b-dropdown-item >Profile</b-dropdown-item>
-              <b-dropdown-item-button @click="disconnect" >Déconnexion</b-dropdown-item-button>
+              <b-dropdown-item-button @click="disconnect" >Vite, déconnectez-moi !</b-dropdown-item-button>
             </b-nav-item-dropdown>
           </b-navbar-nav>
         </b-collapse>
@@ -30,6 +30,8 @@
 
 <script>
 
+import {mapActions} from "vuex";
+
 export default {
   name: "Header",
   data() {
@@ -39,9 +41,12 @@ export default {
   },
   methods : {
     disconnect () {
-      this.$store.dispatch("disconnect")
+      this.logout()
       this.$router.push({name: "login"})
-    }
+    },
+    ...mapActions({
+      logout: 'logout'
+    })
   }
 };
 </script>

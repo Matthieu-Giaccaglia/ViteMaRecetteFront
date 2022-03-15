@@ -1,17 +1,23 @@
 <template>
   <div id="container">
-    <br> <!-- this is an easter egg for romain le breton -->
-    <AllRecipes />
+    <RecipesList
+    :recipes="recipes"
+    />
   </div>
 </template>
 
 <script>
-import AllRecipes from "@/components/Recipes/AllRecipes";
+import RecipesList from "@/components/Recipes/RecipesList";
 
 export default {
   name: "Home",
+  data() {
+    return {
+      recipes: this.$store.getters.getRecipes
+    };
+  },
   components: {
-    AllRecipes,
+    RecipesList,
   },
 };
 </script>

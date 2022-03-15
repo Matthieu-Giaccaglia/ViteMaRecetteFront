@@ -16,12 +16,16 @@ Vue.use(Vuex)
 Vue.use(Cookie)
 
 Vue.config.productionTip = false;
-store.dispatch("initJwt");
 
-Vue.$cookies.config(0)
+store.dispatch("initJwt").then(() => {
+  Vue.$cookies.config(0)
+  new Vue({
+    render: (h) => h(App),
+    store,
+    router
+  }).$mount("#app");
+}).catch(()=> {
+  document.getElementById("app").innerText = "Erreur Interne. Merci de bien vouloir réessayer de venir sur le site plus tard."
+});
 
-new Vue({
-  render: (h) => h(App),
-  store,
-  router
-}).$mount("#app");
+

@@ -1,6 +1,6 @@
 <template>
   <div id="container">
-    <RecipeForm v-if="recipe !== null"
+    <RecipeForm v-if="recipe"
         :id="recipe._id"
         :name="recipe.name"
         :description="recipe.description"
@@ -9,34 +9,33 @@
         :steps="recipe.steps"
         :nb-of-person="recipe.nbOfPerson"
         :creator="recipe.users"
-        :existing="true"
+        :isUpdating="true"
     />
   </div>
 </template>
 
 <script>
 import RecipeForm from "@/components/Recipes/RecipeForm";
+import {mapGetters} from "vuex";
 
 
 export default {
-  name: "CreateRecipeRoute",
+  name: "UpdateRecipeRoute",
   components: {
     RecipeForm
   },
   data() {
     return {
       'recipe': null,
-      'noRecipe': null,
-      'error': null
     }
   },
-  async mounted() {
-    try {
-      this.recipe = await this.$store.dispatch('getRecipeFromDB', this.$route.params.id)
-      if (!this.recipe) this.noRecipe = true;
-    } catch (e) {
-      this.error = true
-    }
+  created() {
+    this.recipe = this.getRecipe(this.$route.params.id)
+  },
+  computed: {
+    ...mapGetters({
+      'getRecipe': 'getRecipe',
+    }),
   },
 }
 </script>

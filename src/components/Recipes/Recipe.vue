@@ -3,7 +3,7 @@
     <h1>Recette {{ this.name }}</h1>
     <p>par {{ this.creator.username }}</p>
     <div class="mb-2">
-      <b-button variant="primary" class="mr-2" :to="'/updateRecipe/'+this.id"
+      <b-button variant="primary" class="mr-2" :to="{name: 'updateRecipe', params:{id: this.id}}"
                 v-if="creator.email === $store.state.user.email">Modifier
       </b-button>
       <b-button variant="danger" class="ml-2" @click="deleteRecipe" v-if="creator.email === $store.state.user.email">
@@ -67,15 +67,15 @@
 </template>
 
 <script>
-import {mapGetters} from "vuex";
 
+import {mapActions} from "vuex";
 
 export default {
   name: "Recipe",
   methods: {
     async deleteRecipe() {
       this.isLoading = true
-      let response = await this.$store.dispatch('deleteRecipe', this.id);
+      let response = await this.deleteRecipe(this.id);
 
       if (response.success) {
         window.alert("Votre recette a été supprimé !")
@@ -86,6 +86,9 @@ export default {
       }
 
     },
+    ...mapActions({
+      deleteRecipe: 'deleteRecipe'
+    })
   },
   data() {
     return {
@@ -104,11 +107,6 @@ export default {
     "nbOfPerson",
     "creator",
   ],
-  computed: {
-    ...mapGetters({
-      pictureUrl: "getPictureUrl",
-    }),
-  },
 }
 </script>
 

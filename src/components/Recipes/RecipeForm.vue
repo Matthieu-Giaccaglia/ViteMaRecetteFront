@@ -8,7 +8,7 @@
       </div>
 
       <b-card
-          :title="(existing? 'Modifier' : 'Créer') + ' ma recette'"
+          :title="(isUpdating? 'Modifier' : 'Créer') + ' ma recette'"
           tag="article"
       >
         <b-card-body>
@@ -116,7 +116,8 @@
                     required
 
                 />
-                <b-button variant="danger" is-text style="cursor: pointer" v-if="index>0" @click="formCreatRecipe.steps.splice(index, 1)">
+                <b-button variant="danger" is-text style="cursor: pointer" v-if="index>0"
+                          @click="formCreatRecipe.steps.splice(index, 1)">
                   -
                 </b-button>
               </b-input-group>
@@ -125,8 +126,10 @@
               </div>
             </div>
 
-            <b-button type="submit" v-if="existing && !isLoading" variant="primary">Modifier cette recette</b-button>
-            <b-button type="submit" v-if="!existing && !isLoading" variant="primary">Créer une recette</b-button>
+            <b-button type="submit" v-if="isUpdating && !isLoading" variant="primary">Vite, modifier ma recette !
+            </b-button>
+            <b-button type="submit" v-if="!isUpdating && !isLoading" variant="primary">Vite, ajoutez ma recette !
+            </b-button>
           </b-form>
 
         </b-card-body>
@@ -147,6 +150,7 @@
   border: silver 1px solid;
   border-radius: 5px;
 }
+
 .my-spinner {
   width: 100%;
   height: 100%;
@@ -163,7 +167,7 @@
 </style>
 
 <script>
-import {mapGetters, mapActions} from "vuex";
+import {mapActions} from "vuex";
 
 export default {
   name: "RecipeForm",
@@ -175,10 +179,9 @@ export default {
     "ingredients",
     "nbOfPerson",
     "steps",
-    "existing",
+    "isUpdating",
   ],
   data() {
-
     return {
       formCreatRecipe: {
         id: this.id,
@@ -191,35 +194,34 @@ export default {
       },
       showDismissibleAlert: false,
       messageAlert: "",
-      units: ['gramme', 'litre', 'c. à c.', 'c. à s.', "", "pincée", 'cube', 'noix', 'branche', 'gousse','sachet'],
+      units: ['gramme', 'litre', 'c. à c.', 'c. à s.', "", "pincée", 'cube', 'noix', 'branche', 'gousse', 'sachet'],
       isLoading: false,
     };
-  }
-  ,
+  },
   methods: {
     addStep() {
       this.formCreatRecipe.steps.push({
         step: this.formCreatRecipe.steps.length + 1,
         action: ""
       })
-    }
-    ,
+    },
     addIngredient() {
       this.formCreatRecipe.ingredients.push({
         name: "",
         quantity: "",
         unit: "",
       })
-    }
-    ,
+    },
     async sendRecipe(event) {
       event.preventDefault();
       this.isLoading = true
       let response;
-      if (this.existing)
-        response = await this.$store.dispatch('updateRecipe', this.formCreatRecipe);
+      if (this.isUpdating)
+        response = await this.updateRecipe(this.formCreatRecipe);
       else
-        response = await this.$store.dispatch('createRecipe', this.formCreatRecipe);
+        response = await this.createRecipe(this.formCreatRecipe);
+
+      this.isLoading = false
 
       if (response.success) {
         window.alert("Recette sauvegardée !")
@@ -238,24 +240,12 @@ export default {
         }
         reader.readAsDataURL(event.target.files[0])
       })
-    }
-  }
-  ,
-  computed: {
-    validation() {
-      return this.formCreatRecipe.password === this.formCreatRecipe.passwordCopy
-    }
-    ,
-    ...
-        mapGetters({
-          urlApi: "getApiUrl",
-        }),
-    ...
-        mapActions({
-          createUser: "createUser",
-        }),
-  }
-  ,
+    },
+    ...mapActions({
+      updateRecipe: 'updateRecipe',
+      createRecipe: 'createRecipe'
+    }),
+  },
 }
 ;
 </script>

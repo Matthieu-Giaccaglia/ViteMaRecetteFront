@@ -1,26 +1,24 @@
 <template>
-<div>
-  <Recipe v-if="recipe != null"
-    :id="recipe._id"
-    :name="recipe.name"
-    :description="recipe.description"
-    :ingredients="recipe.ingredients"
-    :picture="recipe.picture"
-    :steps="recipe.steps"
-    :nb-of-person="recipe.nbOfPerson"
-    :creator="recipe.users"
-  />
-  <div v-if="noRecipe != null">
-    Recette introuvable
+  <div>
+    <Recipe
+        v-if="recipe != null"
+        :id="recipe._id"
+        :name="recipe.name"
+        :description="recipe.description"
+        :ingredients="recipe.ingredients"
+        :picture="recipe.picture"
+        :steps="recipe.steps"
+        :nb-of-person="recipe.nbOfPerson"
+        :creator="recipe.users"
+    />
+    <div v-if="!recipe">
+      Recette introuvable
+    </div>
   </div>
-  <div class="my-spinner" v-if="recipe == null && noRecipe == null && error == null">
-    <b-spinner label="Large Spinner" style="width: 10rem; height: 10rem"></b-spinner>
-  </div>
-</div>
 </template>
 
-<script>
 
+<script>
 import Recipe from "@/components/Recipes/Recipe";
 import {mapGetters} from "vuex";
 
@@ -30,43 +28,20 @@ export default {
   data() {
     return {
       'recipe': null,
-      'noRecipe' : null,
-      'error' :null
     }
   },
-
-  async mounted() {
+  created() {
     try {
-      this.recipe = await this.$store.dispatch('getRecipeFromDB', this.$route.params.id)
-      if (!this.recipe) this.noRecipe = true;
+      this.recipe = this.getRecipe(this.$route.params.id)
     } catch (e) {
       this.error = true
     }
   },
-
   computed: {
     ...mapGetters({
-      pictureUrl: "getPictureUrl",
+      getRecipe: "getRecipe",
     }),
   }
 }
 
 </script>
-
-<style scoped>
-
-.my-spinner {
-  width: max-content;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 350px;
-}
-
-.spinner-border {
-  border-width: 0.75rem;
-}
-</style>
